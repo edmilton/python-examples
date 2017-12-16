@@ -13,7 +13,7 @@ def read_email():
         mail.login(FROM_EMAIL, FROM_PWD)
         mail.select('inbox', readonly=False)
 
-        type_mail, data = mail.search(None, 'SUBJECT ENSINTECH_SENAC_ALUNO')
+        type_mail, data = mail.search(None, 'SUBJECT ASSUNTO-ESPECÍFICO')
         mail_ids = data[0]
 
         id_list = mail_ids.split()
@@ -57,7 +57,7 @@ def read_email():
                         print('EVENTO: ' + detail_str.replace('\n', ' ') + '\n')
                         print('SQL: \n' + sql_str + '\n')
 
-                        labeled = mail.store(str.encode(str(i)), '+X-GM-LABELS', 'ensintech_deadlock_reviewed')
+                        labeled = mail.store(str.encode(str(i)), '+X-GM-LABELS', 'seu-label')
 
                         print('----------------------------------------------------------')
                         print('----------------------------------------------------------')
