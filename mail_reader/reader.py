@@ -25,42 +25,46 @@ def read_email():
             typ, data = mail.fetch(str.encode(str(i)), '(RFC822)')
 
             for response_part in data:
-                if isinstance(response_part, tuple):
-                    msg = email.message_from_string(response_part[1].decode('utf-8'))
-                    email_subject = msg['subject']
-                    email_from = msg['from']
-                    mail_str = str(msg)
+                if not isinstance(response_part, tuple):
+                    continue
 
-                    # print('Message: ' + message_str)
-                    if mail_str.find('<td class="luceeH0">SQL</td>') > 1:
-                        print('From : ' + email_from + '\n')
-                        print('Subject : ' + email_subject + '\n')
+                msg = email.message_from_string(response_part[1].decode('utf-8'))
+                mail_str = str(msg)
 
-                        # INFORMAÇÃO DE DETALHE
-                        detail_pos_ini = mail_str.find('class="luceeH0">Detail</td>')
-                        detail_pos_inter = mail_str.find('<td class="luceeN1">', detail_pos_ini)
-                        detail_pos_fim = mail_str.find('</td>', detail_pos_inter)
-                        detail_str = mail_str[detail_pos_inter + 20:detail_pos_fim]
+                # Se e-mail não contém a estrutura que precisamos, não processa
+                if mail_str.find('<td class="luceeH0">SQL</td>') <= 1:
+                    continue
 
-                        # SQL EVENTO
-                        sql_pos_ini = mail_str.find('<td class="luceeH0">SQL</td>')
-                        sql_pos_inter = mail_str.find('<td class="luceeN1">', sql_pos_ini)
-                        sql_pos_fim = mail_str.find('</td>', sql_pos_inter)
-                        sql_str = mail_str[sql_pos_inter + 20:sql_pos_fim]
+                email_subject = msg['subject']
+                email_from = msg['from']
 
-                        # DATA/HORA EVENTO
-                        datetime_error_pos_ini = mail_str.find('<h2>{ts ')
-                        datetime_error_pos_fim = mail_str.find('</h2>', datetime_error_pos_ini)
-                        datetime_error = mail_str[datetime_error_pos_ini + 4:datetime_error_pos_fim]
+                # INFORMAÇÃO DE DETALHE
+                detail_pos_ini = mail_str.find('class="luceeH0">Detail</td>')
+                detail_pos_inter = mail_str.find('<td class="luceeN1">', detail_pos_ini)
+                detail_pos_fim = mail_str.find('</td>', detail_pos_inter)
+                detail_str = mail_str[detail_pos_inter + 20:detail_pos_fim]
 
-                        print('DATA/HORA: ' + datetime_error + '\n')
-                        print('EVENTO: ' + detail_str.replace('\n', ' ') + '\n')
-                        print('SQL: \n' + sql_str + '\n')
+                # SQL EVENTO
+                sql_pos_ini = mail_str.find('<td class="luceeH0">SQL</td>')
+                sql_pos_inter = mail_str.find('<td class="luceeN1">', sql_pos_ini)
+                sql_pos_fim = mail_str.find('</td>', sql_pos_inter)
+                sql_str = mail_str[sql_pos_inter + 20:sql_pos_fim]
 
-                        labeled = mail.store(str.encode(str(i)), '+X-GM-LABELS', 'seu-label')
+                # DATA/HORA EVENTO
+                datetime_error_pos_ini = mail_str.find('<h2>{ts ')
+                datetime_error_pos_fim = mail_str.find('</h2>', datetime_error_pos_ini)
+                datetime_error = mail_str[datetime_error_pos_ini + 4:datetime_error_pos_fim]
 
-                        print('----------------------------------------------------------')
-                        print('----------------------------------------------------------')
+                print('From : ' + email_from + '\n')
+                print('Subject : ' + email_subject + '\n')
+                print('DATA/HORA: ' + datetime_error + '\n')
+                print('EVENTO: ' + detail_str.replace('\n', ' ') + '\n')
+                print('SQL: \n' + sql_str + '\n')
+
+                mail.store(str.encode(str(i)), '+X-GM-LABELS', 'seu-label')
+
+                print('----------------------------------------------------------')
+                print('----------------------------------------------------------')
 
         mail.logout()
 
@@ -70,4 +74,3 @@ def read_email():
 
 if __name__ == '__main__':
     read_email()
-
