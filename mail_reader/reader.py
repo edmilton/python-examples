@@ -61,7 +61,7 @@ def read_email():
                 print('EVENTO: ' + detail_str.replace('\n', ' ') + '\n')
                 print('SQL: \n' + sql_str + '\n')
 
-                mail.store(str.encode(str(i)), '+X-GM-LABELS', 'seu-label')
+                mail.store(str.encode(str(i)), '+X-GM-LABELS', 'seu_label')
 
                 print('----------------------------------------------------------')
                 print('----------------------------------------------------------')
